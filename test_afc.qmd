@@ -1,0 +1,54 @@
+---
+title: "test_afc"
+format: html
+---
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(FactoMineR)
+```
+## Production de sciage
+
+
+```{r, echo=TRUE}
+sciage = read_csv('sciage.csv',show_col_types = FALSE, col_types = cols(REG = col_character()))
+```
+
+```{r}
+res.ca=CA(sciage[,1:16], graph=FALSE, col.sup=c(14,15),quali.sup=16 )
+```
+
+```{r}
+barplot(res.ca$eig[,2],main="Valeurs propres", names.arg=1:nrow(res.ca$eig))
+```
+
+```{r}
+#| column: screen
+#| out-width: 100%
+#| fig-format: svg
+options(ggrepel.max.overlaps = Inf)
+plot(res.ca, invisible="row",title="Représentation des colonnes", axes=c(1,2),max.overlaps=15)
+```
+
+
+```{r}
+#| column: screen
+#| out-width: 100%
+#| fig-format: svg
+cluster = kmeans(res.ca$row$coord[,1:2],3, nstart = 10000)
+sciage$cluster = cluster$cluster
+sciage$axe1 = res.ca$row$coord[,1]
+sciage$axe2 = res.ca$row$coord[,2]
+```
+
+```{r}
+#| column: screen
+#| out-width: 100%
+#| fig-format: svg
+cluster = kmeans(res.ca$row$coord[,1:2],3, nstart = 10000)
+sciage$cluster = cluster$cluster
+sciage$axe1 = res.ca$row$coord[,1]
+sciage$axe2 = res.ca$row$coord[,2]
+write_csv(sciage,'sciage_afc.csv')
+```
